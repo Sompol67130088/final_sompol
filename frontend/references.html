@@ -1,0 +1,60 @@
+<!-- frontend/src/reference.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Reference Management</title></head>
+<body>
+  <h2>จัดการอ้างอิง</h2>
+
+  <form id="addForm">
+    <input type="text" placeholder="IEEE Title" id="title" required>
+    <input type="text" placeholder="PDF URL" id="pdfLink" required>
+    <button type="submit">Add Reference</button>
+  </form>
+
+  <ul id="references"></ul>
+
+  <script>
+    const apiUrl = "http://localhost:3000/api/references";
+
+    function loadReferences() {
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById("references");
+          list.innerHTML = "";
+          data.forEach(ref => {
+            const item = document.createElement("li");
+            item.innerHTML = `
+              <strong>${ref.title}</strong>
+              <a href="${ref.pdf_link}" target="_blank">[PDF]</a>
+              <button onclick="deleteRef(${ref.id})">Delete</button>
+            `;
+            list.appendChild(item);
+          });
+        });
+    }
+
+    document.getElementById("addForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: document.getElementById("title").value,
+          pdf_link: document.getElementById("pdfLink").value
+        })
+      }).then(() => {
+        loadReferences();
+        this.reset();
+      });
+    });
+
+    function deleteRef(id) {
+      fetch(`${apiUrl}/${id}`, { method: "DELETE" })
+        .then(() => loadReferences());
+    }
+
+    loadReferences();
+  </script>
+</body>
+</html>

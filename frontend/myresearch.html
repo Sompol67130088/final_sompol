@@ -1,0 +1,26 @@
+<!-- frontend/src/myresearch.html -->
+<!DOCTYPE html>
+<html>
+<head><title>My Research</title></head>
+<body>
+  <h2>แนวทางการวิจัย</h2>
+  <p>SompolC ศึกษาเรื่อง Wi-Fi Sensing ด้วย SVM เพื่อการตรวจจับกิจกรรมสุขภาพในพื้นที่สาธารณะ...</p>
+
+  <h3>รายการอ้างอิง (IEEE)</h3>
+  <ul id="referenceList"></ul>
+
+  <script>
+    fetch("http://localhost:3000/api/references")
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById("referenceList");
+        data.forEach(ref => {
+          const item = document.createElement("li");
+          item.innerHTML = `<strong>${ref.title}</strong> - 
+            <a href="${ref.pdf_link}" target="_blank">[PDF]</a>`;
+          list.appendChild(item);
+        });
+      });
+  </script>
+</body>
+</html>
